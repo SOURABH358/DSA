@@ -2,55 +2,61 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
-bool check(int V, vector<int>adj[],vector<bool>&visited,int i,vector<int>&mark){
-    if(visited[i]==true)
-    return true;
-    mark[i]=1;
-    visited[i]=true;
-    for(int j=0;j<adj[i].size();j++){
+class Solution {
+  public:
+    // Function to detect cycle in a directed graph.
+    bool helper(vector<int>adj[], int v, vector<bool>&vis, vector<bool>&path)
+    {
+        if(vis[v]==false)
+        {
+            vis[v] = true;
+            path[v] = true;
+            for(int i=0;i<adj[v].size();i++)
+            {
+                if(vis[adj[v][i]]==false)
+                {
+                    if(helper(adj, adj[v][i], vis, path))
+                    return true;
+                }
+                else if(path[adj[v][i]]==true)
+                return true;
+            }
+        }
         
-        if(check(V,adj,visited,adj[i][j],mark))
-        return true;
+        path[v] = false;
+        return false;
     }
-    visited[i]=false;
-    return false;
-}
-bool isCyclic(int V, vector<int> adj[])
-{
-    // Your code here
-     vector<bool>visited(V,false);
-     vector<int>mark(V,0);
-     for(int i=0;i<V;i++){
-         if(mark[i]==0)
-         if(check(V,adj,visited,i,mark))
-         return true;
-     }
-     return false;
-}
-
+    bool isCyclic(int V, vector<int> adj[]) {
+        // code here
+        vector<bool>vis(V, false);
+        vector<bool>path(V, false);
+        for (int i = 0; i < V; i++)
+        if (!vis[i]
+            && helper(adj, i, vis, path))
+            return true;
+        return false;
+    }
+};
 
 int main() {
-	
-	int t;
-	cin >> t;
-	
-	while(t--){
-	    
-	    int v, e;
-	    cin >> v >> e;
-	    
-	    vector<int> adj[v];
-	    
-	    for(int i =0;i<e;i++){
-	        int u, v;
-	        cin >> u >> v;
-	        adj[u].push_back(v);
-	    }
-	    
-	    cout << isCyclic(v, adj) << endl;
-	    
-	}
-	
-	return 0;
-}  
+
+    int t;
+    cin >> t;
+    while (t--) {
+        int V, E;
+        cin >> V >> E;
+
+        vector<int> adj[V];
+
+        for (int i = 0; i < E; i++) {
+            int u, v;
+            cin >> u >> v;
+            adj[u].push_back(v);
+        }
+
+        Solution obj;
+        cout << obj.isCyclic(V, adj) << "\n";
+    }
+
+    return 0;
+}
