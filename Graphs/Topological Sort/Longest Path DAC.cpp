@@ -4,9 +4,9 @@ using namespace std;
 
 class Solution
 {
-	public:
-	//Function to return list containing vertices in Topological order. 
-vector<int> longestPath(int v, vector<int>adj[], int src)
+public:
+//Function to return list containing vertices in Topological order. 
+vector<int> longestPath(int v, vector<vector<int>>adj[], int src)
 {
     vector<int>indeg(v,0);
     vector<int>dis(v, INT_MIN);
@@ -15,7 +15,7 @@ vector<int> longestPath(int v, vector<int>adj[], int src)
     {
         for(auto j: adj[i])
         {
-            indeg[j]++;
+            indeg[j[0]]++;
         }
     }
     queue<int>q;
@@ -26,9 +26,9 @@ vector<int> longestPath(int v, vector<int>adj[], int src)
         q.pop();
         for(auto v: adj[u])
         {
-            if(dis[u]!=INT_MIN&&dis[v]<dis[u]+adj[u][v])
-            dis[v] = dis[u] + adjv[u][v];
-            if(--indeg[v]==0)
+            if(dis[u]!=INT_MIN&&dis[v[0]]<dis[u]+v[1])
+            dis[v[0]] = dis[u] + v[1];
+            if(--indeg[v[0]]==0)
             {
                 q.push(v);
             }
@@ -39,53 +39,31 @@ vector<int> longestPath(int v, vector<int>adj[], int src)
 	
 };
 
-/*  Function to check if elements returned by user
-*   contains the elements in topological sorted form
-*   V: number of vertices
-*   *res: array containing elements in topological sorted form
-*   adj[]: graph input
-*/
-int check(int V, vector <int> &res, vector<int> adj[]) {
-    
-    if(V!=res.size())
-    return 0;
-    
-    vector<int> map(V, -1);
-    for (int i = 0; i < V; i++) {
-        map[res[i]] = i;
-    }
-    for (int i = 0; i < V; i++) {
-        for (int v : adj[i]) {
-            if (map[i] > map[v]) return 0;
-        }
-    }
-    return 1;
-}
-
 int main() {
     int T;
     cin >> T;
     while (T--) {
         int N, E;
         cin >> E >> N;
-        int u, v;
+        int u, v, t;
 
-        vector<int> adj[N];
+        vector<vector<int>> adj[N];
 
         for (int i = 0; i < E; i++) {
-            cin >> u >> v;
-            adj[u].push_back(v);
+            cin >> u >> v >> t;
+            adj[u].push_back({v,t});
         }
         
         Solution obj;
         vector <int> res = obj.longestPath(N, adj, 0);
 
-        cout << check(N, res, adj) << endl;
     }
     
     return 0;
 }
-// Time Complexity: Time complexity of topological sorting is O(V+E). After finding topological order, the algorithm process all vertices and for every vertex, it runs a loop for all adjacent vertices. 
-// Total adjacent vertices in a graph is O(E). So the inner loop runs O(V+E) times. Therefore, overall time complexity of this algorithm is O(V+E).
-
-// Space complexity : O(V + E), where V is the number of vertices and E is the number of edges in the graph. 
+// Complexity Analysis: 
+ 
+// Time Complexity: O(V+E). 
+// The outer for loop will be executed V number of times and the inner for loop will be executed E number of times.
+// Auxiliary Space: O(V). 
+// The queue needs to store all the vertices of the graph. So the space required is O(V)
